@@ -28,6 +28,11 @@ import {decode, encode} from 'base-64'
 import Profile from './src/screens/Profile';
 import ViewMentors from './src/screens/ViewMentors';
 import { firebase } from './src/firebase/config'
+import LogoutScreen from './src/screens/Logout';
+import PreferencesScreen from './src/screens/Preferences';
+import ViewMentees from './src/screens/ViewMentees';
+import Messaging from './src/screens/Messaging';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -46,8 +51,8 @@ export default function App() {
   // }
 
   // useEffect(() => {
-  //   const usersRef = app.firestore().collection('users');
-  //   app.auth().onAuthStateChanged(user => {
+  //   const usersRef = firebase.firestore().collection('users');
+  //   firebase.auth().onAuthStateChanged(user => {
   //     if (user) {
   //       usersRef
   //         .doc(user.uid)
@@ -65,8 +70,20 @@ export default function App() {
   //     }
   //   });
   // }, []);
+
+// const Tab = createBottomTabNavigator();
+
+// function MyTabs() {
+//   return (
+//     <Tab.Navigator>
+//       <Tab.Screen name="Home" component={HomeScreen} />
+//       <Tab.Screen name="ViewMentors" component={ViewMentors} />
+//     </Tab.Navigator>
+//   );
+// }
   return (
     <NavigationContainer>
+
       <Stack.Navigator initialRouteName="Login">
         {/* { user ? (
           <Stack.Screen name="Home">
@@ -85,6 +102,12 @@ export default function App() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="ViewMentors" component={ViewMentors} />
+            <Stack.Screen name="ViewMentees" component={ViewMentees} />
+            <Stack.Screen name="Messaging" component={Messaging} />
+
+
+            <Stack.Screen name="Logout" component={LogoutScreen} />
+            <Stack.Screen name="Preferences" component={PreferencesScreen} />
             
           {/* </>
         )} */}

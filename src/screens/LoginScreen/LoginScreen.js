@@ -78,8 +78,6 @@ export default function LoginScreen({navigation}) {
                 <View style={styles.footerView}>
                     <Text style={styles.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
                 </View>
-                <Button title="Go to Home" onPress={() => navigation.navigate('ViewMentors')} />
-                <Button title="Go to Home" onPress={() => navigation.navigate('Profile')} />
 
             </KeyboardAwareScrollView>
         </View>

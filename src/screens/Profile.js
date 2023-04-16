@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { View, Text, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 import firebase from "firebase/compat/app";
 import { Button } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function Profile({ route, navigation }) {
   const { user } = route.params;
@@ -16,6 +17,9 @@ export default function Profile({ route, navigation }) {
   const fields = Object.entries(user).filter(
     ([key, value]) => key !== "id" && value !== null
   );
+//   const [loading, setLoading] = useState(true);
+
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -63,8 +67,39 @@ export default function Profile({ route, navigation }) {
     }
   };
 
+  // get all the info of the logged in user
+
+//   useEffect(() => {
+//     const usersRef = firebase.firestore().collection("users");
+//     firebase.auth().onAuthStateChanged((user) => {
+//         if (user) {
+//             usersRef
+//                 .doc(user.uid)
+//                 .get()
+//                 .then((document) => {
+//                     const userData = document.data()
+//                     setLoading(false)
+//                     setUser(userData)
+//                 })
+//                 .catch((error) => {
+//                     setLoading(false)
+//                 });
+//         } else {
+//             setLoading(false)
+//         }
+//     });
+// }, []);
+
+const handleLogout = () => {
+    firebase.auth().signOut().then(() => {
+        navigation.navigate('Login')
+    })
+}
+    
+
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <KeyboardAwareScrollView>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "space-between" }}>
       <Image
         source={{ uri: "https://via.placeholder.com/150" }}
         style={{ width: 150, height: 150, borderRadius: 75 }}
@@ -115,6 +150,10 @@ export default function Profile({ route, navigation }) {
           View Mentees
         </Button>
       )}
+
+<Button mode="contained" onPress={handleLogout}>
+Logout      </Button>
     </View>
+    </KeyboardAwareScrollView>
   );
 }

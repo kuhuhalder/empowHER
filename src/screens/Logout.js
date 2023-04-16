@@ -3,10 +3,11 @@ import { Button, StyleSheet, View } from 'react-native';
 // import { firebase } from '../../firebase/config';
 import firebase from 'firebase/compat/app';
 
-const LogoutScreen = () => {
+const LogoutScreen = (navigation) => {
   const handleLogout = () => {
     firebase.auth().signOut();
-  };
+    navigation.navigate('Login')
+ };
 
   return (
     <View style={styles.container}>

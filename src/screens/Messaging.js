@@ -30,11 +30,12 @@ const Messaging = ({ route, navigation }) => {
       });
     return unsubscribe;
   }, [mentorId]);
-  // Initialize Firebase Firestore
+  
   useEffect(() => {
-    firebase
-      .firestore()
-      .collection("messages")
+    const messagesRef = firebase.firestore().collection("messages");
+    const query = messagesRef
+      .where("receiverId", "==", mentorId)
+      .where("senderId", "==", userId)
       .orderBy("createdAt", "desc")
       .onSnapshot((snapshot) => {
         const messages = snapshot.docs.map((doc) => ({
@@ -43,18 +44,22 @@ const Messaging = ({ route, navigation }) => {
         }));
         setMessages(messages);
       });
-  }, []);
+    return () => {
+      query();
+    };
+  }, [mentorId, userId]);
+  
 
   // Send a message
   const sendMessage = async () => {
     if (text.trim()) {
       const userRef = firebase.firestore().collection("users").doc(userId);
       const userDoc = await userRef.get();
-      var senderName = userDoc.data().name;
+      const senderName = userDoc.data().name;
 
       const userRef1 = firebase.firestore().collection("users").doc(mentorId);
       const userDoc1 = await userRef1.get();
-      var receiverName = userDoc1.data().name;
+      const receiverName = userDoc1.data().name;
   
       const message = {
         senderId: userId,

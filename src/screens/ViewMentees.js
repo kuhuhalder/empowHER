@@ -34,13 +34,12 @@
 
 // export default ViewMentees;
 
-
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import firebase from 'firebase/compat/app';
-import { Card, Title, Paragraph } from 'react-native-paper';
-import {Button} from 'react-native-paper';
-import 'firebase/compat/firestore';
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import firebase from "firebase/compat/app";
+import { Card, Title, Paragraph } from "react-native-paper";
+import { Button } from "react-native-paper";
+import "firebase/compat/firestore";
 export default function ViewMentees({ navigation }) {
   const [mentors, setMentors] = useState([]);
 
@@ -48,8 +47,8 @@ export default function ViewMentees({ navigation }) {
     // Retrieve all mentors from Firestore
     const unsubscribe = firebase
       .firestore()
-      .collection('users')
-      .where('value', '==', 'mentee')
+      .collection("users")
+      .where("value", "==", "mentee")
       .onSnapshot((snapshot) => {
         const mentorsData = [];
         snapshot.forEach((doc) => {
@@ -61,9 +60,9 @@ export default function ViewMentees({ navigation }) {
   }, []);
 
   const handlePressMessage = (mentorId) => {
-    console.log('Message button pressed', mentorId)
+    console.log("Message button pressed", mentorId);
     // Navigate to messaging screen and pass mentor ID as parameter
-    navigation.navigate('Messaging', {mentorId: mentorId });
+    navigation.navigate("Messaging", { mentorId: mentorId });
   };
 
   const renderItem = ({ item }) => (
@@ -73,16 +72,20 @@ export default function ViewMentees({ navigation }) {
         <Text style={{ fontSize: 16 }}>{item.bio}</Text>
         <Text style={{ fontSize: 16 }}>Skills: {item.skills}</Text> */}
 
-<Card>
-      <Card.Content>
-        <Title>{item.name}</Title>
-        <Paragraph>{item.bio}</Paragraph>
-        {/* <Button icon="camera" mode="contained" onPress={() => navigation.navigate("Messaging")}>Message</Button> */}
-      </Card.Content>
-    </Card>
+        <Card>
+          <Card.Content>
+            <Title>{item.name}</Title>
+            <Paragraph>{item.bio}</Paragraph>
+            {/* <Button icon="camera" mode="contained" onPress={() => navigation.navigate("Messaging")}>Message</Button> */}
+          </Card.Content>
+        </Card>
         {/* <Button title="Message" onPress={() => handlePressMessage(item.id)} /> */}
-                <Button icon="camera" mode="contained" onPress={() => handlePressMessage(item.id)}>Message</Button>
-
+        <Button
+          mode="contained"
+          onPress={() => handlePressMessage(item.id)}
+        >
+          Message
+        </Button>
       </View>
     </TouchableOpacity>
   );

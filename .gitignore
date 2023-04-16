@@ -19,3 +19,4 @@ web-build/
 .env
 
 src/firebase/config.js
+firebaseConfig.js

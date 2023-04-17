@@ -33,6 +33,10 @@ import PreferencesScreen from './src/screens/Preferences';
 import ViewMentees from './src/screens/ViewMentees';
 import Messaging from './src/screens/Messaging';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AddEntities from './src/screens/AddEntities';
+import ViewProfilePage from './src/screens/ViewProfile';
+import MatchPage from './src/screens/CreateMatch';
+import AddMoreInfo from './src/screens/AddMoreInfo';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -84,7 +88,7 @@ export default function App() {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Home">
         {/* { user ? (
           <Stack.Screen name="Home">
             {props => <HomeScreen {...props} extraData={user} />}
@@ -101,10 +105,13 @@ export default function App() {
             <Stack.Screen name="Registration" component={RegistrationScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="ViewMentors" component={ViewMentors} />
-            <Stack.Screen name="ViewMentees" component={ViewMentees} />
-            <Stack.Screen name="Messaging" component={Messaging} />
-
+            <Stack.Screen name="View Mentors" component={ViewMentors} />
+            <Stack.Screen name="View Mentees" component={ViewMentees} />
+            <Stack.Screen name="Messages" component={Messaging} />
+            <Stack.Screen name="Add Mentors" component={AddEntities} />
+            <Stack.Screen name="View Profile" component={ViewProfilePage} />
+            <Stack.Screen name="View Match" component={MatchPage} />
+            <Stack.Screen name="Add More Information" component={AddMoreInfo} />
 
             <Stack.Screen name="Logout" component={LogoutScreen} />
             <Stack.Screen name="Preferences" component={PreferencesScreen} />

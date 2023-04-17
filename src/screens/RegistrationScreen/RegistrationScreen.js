@@ -6,6 +6,8 @@ import { RadioButton, useTheme } from "react-native-paper";
 // import { Text } from '@rneui/themed';
 
 import { firebase } from "../../firebase/config";
+// import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
+
 
 export default function RegistrationScreen({ navigation }) {
   const [name, setName] = useState("");
@@ -26,6 +28,30 @@ export default function RegistrationScreen({ navigation }) {
   const onFooterLinkPress = () => {
     navigation.navigate("Login");
   };
+
+//   const onGoogleButtonPress = async () => {
+//     try {
+//       await GoogleSignin.hasPlayServices();
+//       const userInfo = await GoogleSignin.signIn();
+//       const googleCredential = firebase.auth.GoogleAuthProvider.credential(userInfo.idToken, userInfo.accessToken);
+//       await firebase.auth().signInWithCredential(googleCredential);
+//     }
+    
+//     //   Navigate to the desired screen after successful sign-in
+//     catch (error) {
+//     //   if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+//     //     // user cancelled the sign-in flow
+//     //   } else if (error.code === statusCodes.IN_PROGRESS) {
+//     //     // operation (e.g. sign-in) is in progress already
+//     //   } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+//     //     // play services not available or outdated
+//     //   } else {
+//         // some other error occurred
+//       }
+// }
+  
+   
+
 
   const onRegisterPress = () => {
     if (password !== confirmPassword) {
@@ -168,6 +194,13 @@ export default function RegistrationScreen({ navigation }) {
             </Text>
           </Text>
         </View>
+
+        {/* <GoogleSigninButton
+  style={{ width: '100%', height: 48 }}
+  size={GoogleSigninButton.Size.Wide}
+  color={GoogleSigninButton.Color.Light}
+  onPress={onGoogleButtonPress}
+/> */}
       </KeyboardAwareScrollView>
     </View>
   );

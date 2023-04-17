@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/ngrok": "^2.5.0",
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-google-signin/google-signin": "^9.0.2",
     "@react-native-picker/picker": "^2.4.10",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
@@ -19,6 +20,7 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "base-64": "^1.0.0",
     "expo": "~48.0.11",
+    "expo-google-app-auth": "~8.3.0",
     "expo-image-picker": "~14.1.1",
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.16.4",
@@ -26,7 +28,9 @@
     "react": "18.2.0",
     "react-native": "0.71.6",
     "react-native-gesture-handler": "~2.9.0",
+    "react-native-google-signin": "^2.1.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-material-dropdown": "^0.11.1",
     "react-native-paper": "^5.6.0",
     "react-native-reanimated": "~2.14.4",
     "react-native-safe-area-context": "4.5.0",
@@ -34,7 +38,8 @@
     "react-native-vector-icons": "^9.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/react-native-material-dropdown": "^0.11.5"
   },
   "private": true
 }

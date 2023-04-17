@@ -1,48 +1,18 @@
-// import React, { useState, useEffect } from 'react';
-// import { FlatList } from 'react-native';
-// import firebase from 'firebase/compat/app';
-// import 'firebase/compat/firestore';
-// // import firebase from '../firebase/config';
-// import MentorCard from './MentorCard';
 
-// const ViewMentees = (navigation) => {
-//   const [mentees, setMentees] = useState([]);
-
-//   useEffect(() => {
-//     const db = firebase.firestore();
-//     const mentorsRef = db.collection('users').where('value', '==', 'mentee');
-
-//     mentorsRef.get().then(querySnapshot => {
-//       const menteesList = [];
-//       querySnapshot.forEach(doc => {
-//         const mentorData = doc.data();
-//         const mentor = { id: doc.id, ...mentorData };
-//         menteesList.push(mentor);
-//       });
-//       setMentees(menteesList);
-//     });
-//   }, []);
-
-//   return (
-//     <FlatList
-//       data={mentees}
-//       renderItem={({ item }) => <MentorCard mentor={item} />}
-//       keyExtractor={(item) => item.id}
-//     />
-//   );
-// };
-
-// export default ViewMentees;
 
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import firebase from "firebase/compat/app";
 import { Card, Title, Paragraph } from "react-native-paper";
-import { Button } from "react-native-paper";
+import { Button, Searchbar } from "react-native-paper";
 import "firebase/compat/firestore";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 export default function ViewMentors({ navigation }) {
   const [mentors, setMentors] = useState([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
+  const onChangeSearch = query => setSearchQuery(query);
   useEffect(() => {
     // Retrieve all mentors from Firestore
     const unsubscribe = firebase
@@ -61,13 +31,17 @@ export default function ViewMentors({ navigation }) {
 
   const handlePressMessage = (mentorId) => {
     console.log("Message button pressed", mentorId);
-    // Navigate to messaging screen and pass mentor ID as parameter
-    navigation.navigate("Messaging", { mentorId: mentorId });
+    navigation.navigate("Messages", { mentorId: mentorId });
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handlePressMessage(item.id)}>
+    <KeyboardAwareScrollView
+        style={{ flex: 1, width: "100%" }}
+        keyboardShouldPersistTaps="always"
+      >
+    <TouchableOpacity onPress={() => navigation.navigate("View Profile", {user: item})}>
       <View style={{ padding: 10 }}>
+
         {/* <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
         <Text style={{ fontSize: 16 }}>{item.bio}</Text>
         <Text style={{ fontSize: 16 }}>Skills: {item.skills}</Text> */}
@@ -81,20 +55,24 @@ export default function ViewMentors({ navigation }) {
         </Card>
         {/* <Button title="Message" onPress={() => handlePressMessage(item.id)} /> */}
         <Button
-          mode="contained"
+          mode="contained" style = {{marginTop: 10, width: 150,  alignSelf: 'center'}}
           onPress={() => handlePressMessage(item.id)}
         >
           Message
         </Button>
       </View>
     </TouchableOpacity>
+    </KeyboardAwareScrollView>
   );
 
   return (
-    <FlatList
-      data={mentors}
-      keyExtractor={(item) => item.id}
-      renderItem={renderItem}
-    />
+    <><Searchbar
+          placeholder="Search"
+          onChangeText={onChangeSearch}
+          value={searchQuery}
+          style={{ marginBottom: 10 }} /><FlatList
+              data={mentors}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem} /></>
   );
 }

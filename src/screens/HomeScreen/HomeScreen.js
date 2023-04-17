@@ -1,16 +1,22 @@
-import React from 'react'
-import { Text, View, Button } from 'react-native'
-
+import React from "react";
+import { Text, View } from "react-native";
+import { Button } from "react-native-paper";
+import { Image } from "react-native";
+import styles from "./styles";
 export default function HomeScreen({ navigation }) {
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        {/* <Text>Details Screen</Text> */}
-        {/* <Button
-          title="Go to Details... again"
-          onPress={() => navigation.push('Details')}
-        /> */}
-        <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
-        <Button title="Go back" onPress={() => navigation.goBack()} />
-      </View>
-    )
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Image style={styles.logo} source={require("../../../assets/icon.png")} />
+      <Button mode="elevated"  style={{ marginVertical: 10 }} onPress={() => navigation.navigate("Login")}>
+        Login
+      </Button>
+
+      <Button
+        mode="elevated"
+        onPress={() => navigation.navigate("Registration")}
+      >
+        Sign Up
+      </Button>
+    </View>
+  );
 }

@@ -20,3 +20,5 @@ web-build/
 
 src/firebase/config.js
 firebaseConfig.js
+
+.vscode

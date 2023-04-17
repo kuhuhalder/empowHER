@@ -30,12 +30,12 @@ const Messaging = ({ route, navigation }) => {
       });
     return unsubscribe;
   }, [mentorId]);
-  
+
   useEffect(() => {
     const messagesRef = firebase.firestore().collection("messages");
     const query = messagesRef
-      .where("receiverId", "==", mentorId)
-      .where("senderId", "==", userId)
+      .where("receiverId", "in", [mentorId])
+      .where("senderId", "in", [ userId])
       .orderBy("createdAt", "desc")
       .onSnapshot((snapshot) => {
         const messages = snapshot.docs.map((doc) => ({
@@ -48,7 +48,6 @@ const Messaging = ({ route, navigation }) => {
       query();
     };
   }, [mentorId, userId]);
-  
 
   // Send a message
   const sendMessage = async () => {
@@ -69,7 +68,16 @@ const Messaging = ({ route, navigation }) => {
         text: text,
         createdAt: new Date().getTime(),
       };
+      const message1 = {
+        senderId: mentorId,
+        senderName: receiverName,
+        receiverName: senderName,
+        receiverId: userId,
+        text: text,
+        createdAt: new Date().getTime(),
+      };
       await firebase.firestore().collection("messages").add(message);
+      await firebase.firestore().collection("messages").add(message1);
       setText("");
     }
   };
@@ -95,7 +103,7 @@ const renderMessage = ({ item }) => {
 
   return (
     <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 18, fontWeight: "bold", alignItems: "center" }}>{receiverName}</Text>
+        <Text style={{ fontSize: 18, alignSelf: "center" }}>Messaging with {receiverName}!</Text>
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}

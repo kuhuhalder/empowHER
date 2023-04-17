@@ -4,10 +4,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import styles from "./styles";
 import { RadioButton, useTheme } from "react-native-paper";
 // import { Text } from '@rneui/themed';
+import { CheckBox, Icon } from "@rneui/themed";
 
 import { firebase } from "../../firebase/config";
 // import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
-
 
 export default function RegistrationScreen({ navigation }) {
   const [name, setName] = useState("");
@@ -24,34 +24,33 @@ export default function RegistrationScreen({ navigation }) {
   const [skills, setSkills] = useState(null);
   const [classes, setClasses] = useState(null);
   const [clubs, setClubs] = useState(null);
+  const [photoURL, setPhotoURL] = useState(null);
+  const [checked, setChecked] = useState(false);
 
   const onFooterLinkPress = () => {
     navigation.navigate("Login");
   };
 
-//   const onGoogleButtonPress = async () => {
-//     try {
-//       await GoogleSignin.hasPlayServices();
-//       const userInfo = await GoogleSignin.signIn();
-//       const googleCredential = firebase.auth.GoogleAuthProvider.credential(userInfo.idToken, userInfo.accessToken);
-//       await firebase.auth().signInWithCredential(googleCredential);
-//     }
-    
-//     //   Navigate to the desired screen after successful sign-in
-//     catch (error) {
-//     //   if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-//     //     // user cancelled the sign-in flow
-//     //   } else if (error.code === statusCodes.IN_PROGRESS) {
-//     //     // operation (e.g. sign-in) is in progress already
-//     //   } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-//     //     // play services not available or outdated
-//     //   } else {
-//         // some other error occurred
-//       }
-// }
-  
-   
+  //   const onGoogleButtonPress = async () => {
+  //     try {
+  //       await GoogleSignin.hasPlayServices();
+  //       const userInfo = await GoogleSignin.signIn();
+  //       const googleCredential = firebase.auth.GoogleAuthProvider.credential(userInfo.idToken, userInfo.accessToken);
+  //       await firebase.auth().signInWithCredential(googleCredential);
+  //     }
 
+  //     //   Navigate to the desired screen after successful sign-in
+  //     catch (error) {
+  //     //   if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //     //     // user cancelled the sign-in flow
+  //     //   } else if (error.code === statusCodes.IN_PROGRESS) {
+  //     //     // operation (e.g. sign-in) is in progress already
+  //     //   } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //     //     // play services not available or outdated
+  //     //   } else {
+  //         // some other error occurred
+  //       }
+  // }
 
   const onRegisterPress = () => {
     if (password !== confirmPassword) {
@@ -76,6 +75,7 @@ export default function RegistrationScreen({ navigation }) {
           skills,
           classes,
           clubs,
+          photoURL,
         };
         const usersRef = firebase.firestore().collection("users");
         usersRef
@@ -180,12 +180,22 @@ export default function RegistrationScreen({ navigation }) {
           autoCapitalize="none"
         />
 
+        <CheckBox
+          center
+          title="By signing up, you are agreeing to receive weekly buddy pairing emails. "
+          checkedIcon="dot-circle-o"
+          uncheckedIcon="circle-o"
+          checked={checked}
+          onPress={() => setChecked(!checked)}
+        />
+
         <TouchableOpacity
           style={styles.button}
           onPress={() => onRegisterPress()}
         >
           <Text style={styles.buttonTitle}>Create account</Text>
         </TouchableOpacity>
+
         <View style={styles.footerView}>
           <Text style={styles.footerText}>
             Already got an account?{" "}

@@ -92,7 +92,7 @@ const AddMoreInfo = ({ route, navigation }) => {
         style={styles.input}
         placeholder="Classes"
         value={classes}
-        onChangeText={(text) => setClasses(text)}
+        onChangeText={(text) => setClasses([text])}
       />
       <Text style={{ fontSize: 16 }}> Select Clubs you are a part of</Text>
       <TextInput

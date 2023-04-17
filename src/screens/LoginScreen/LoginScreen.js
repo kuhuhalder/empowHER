@@ -10,6 +10,8 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "./styles";
 import { firebase } from "../../firebase/config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -35,6 +37,7 @@ export default function LoginScreen({ navigation }) {
               return;
             }
             const user = firestoreDocument.data();
+            AsyncStorage.setItem('user', JSON.stringify(user));
             navigation.navigate("Profile", { user: user });
           })
           .catch((error) => {
@@ -45,6 +48,7 @@ export default function LoginScreen({ navigation }) {
         alert(error);
       });
   };
+  
 
   return (
     <View style={styles.container}>

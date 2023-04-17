@@ -4,131 +4,117 @@ import { Button } from "react-native-paper";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 
-export default function MatchPage({ navigation }) {
-  const [mentee, setMentee] = useState(null);
+export default function MatchPage({navigation}) {
+  const [match, setMatch] = useState(null);
   const [mentor, setMentor] = useState(null);
-  const [matched, setMatched] = useState(false);
+
 
   useEffect(() => {
     const db = firebase.firestore();
-    const query = db.collection("users").where("value", "==", "mentee");
-
-    const unsubscribe = query.onSnapshot(
-      (querySnapshot) => {
-        const mentees = [];
-        querySnapshot.forEach((doc) => {
-          mentees.push({ id: doc.id, ...doc.data() });
-        });
-        setMentee(mentees[Math.floor(Math.random() * mentees.length)]);
-      },
-      (error) => {
-        console.log("Error getting mentees: ", error);
+    const currentUser = firebase.auth().currentUser;
+    const query = db.collection("matches")
+      .where("menteeId", "==", currentUser.id);
+  
+    const unsubscribe = query.onSnapshot((querySnapshot) => {
+      const matches = [];
+      querySnapshot.forEach((doc) => {
+        matches.push({ id: doc.id, ...doc.data() });
+      });
+      if (matches.length > 0) {
+        setMatch(matches[0]);
+      } else {
+        setMatch(null);
       }
-    );
-
-    return () =>
-      unsubscribe()
-        .then(() => {
-          console.log("Unsubscribed from mentees");
-        })
-        .catch((error) => {
-          console.log("Error unsubscribing from mentees: ", error);
-        });
+    }, (error) => {
+      console.log("Error getting matches: ", error);
+    });
+  
+    return () => unsubscribe().then(() => {
+      console.log("Unsubscribed from matches");
+    }).catch((error) => {
+      console.log("Error unsubscribing from matches: ", error);
+    });
   }, []);
-
-  useEffect(() => {
-    if (mentee) {
-      const db = firebase.firestore();
-      const unsubscribe = db
-        .collection("users")
-        .where("value", "==", "mentor")
-        .where("classes", "array-contains-any", mentee.classes)
-        .get()
-        .then((querySnapshot) => {
+  
+  const handleMatchPress = () => {
+    const db = firebase.firestore();
+    const currentUser = firebase.auth().currentUser;
+    const query = db.collection("users")
+      .doc(currentUser.uid);
+  
+    query.get().then((doc) => {
+      if (doc.exists) {
+        const currentUserData = doc.data();
+        const menteeClasses = currentUserData.classes || [];
+        const mentorQuery = db.collection("users")
+          .where("value", "==", "mentor")
+          .where("classes", "array-contains-any", menteeClasses)
+          .limit(1);
+  
+        mentorQuery.get().then((mentorQuerySnapshot) => {
           const mentors = [];
-          querySnapshot.forEach((doc) => {
+          mentorQuerySnapshot.forEach((doc) => {
             mentors.push({ id: doc.id, ...doc.data() });
           });
-          setMentor(mentors[Math.floor(Math.random() * mentors.length)]);
-        })
-        .catch((error) => {
-          console.log("Error getting mentors: ", error);
+  
+          if (mentors.length > 0) {
+            const mentor = mentors[0];
+            setMentor(mentor);
+            const match = {
+              menteeId: currentUser.uid,
+              mentorId: mentor.id,
+              menteeName: currentUserData.name,
+              mentorName: mentor.name,
+              menteeEmail: currentUserData.email,
+              mentorEmail: mentor.email,
+              createdAt: firebase.firestore.Timestamp.now(),
+            };
+            db.collection("matches")
+              .add(match)
+              .then((docRef) => {
+                console.log("Match added with ID: ", docRef.id);
+                setMatch(match);
+              })
+              .catch((error) => {
+                console.error("Error adding match: ", error);
+              });
+          } else {
+            console.log("No mentors found with matching classes");
+          }
+        }).catch((error) => {
+          console.error("Error getting mentors: ", error);
         });
-      return () => unsubscribe();
-    }
-  }, [mentee]);
-
-//   useEffect(() => {
-//     if (mentee && mentor) {
-//       const db = firebase.firestore();
-//       const match = {
-//         menteeId: mentee.id,
-//         mentorId: mentor.id,
-//         menteeName: mentee.name,
-//         mentorName: mentor.name,
-//         createdAt: firebase.firestore.Timestamp.now(),
-//       };
-//       db.collection("matches")
-//         .add(match)
-//         .then((docRef) => {
-//           console.log("Match added with ID: ", docRef.id);
-//           setMatched(true);
-//         })
-//         .catch((error) => {
-//           console.error("Error adding match: ", error);
-//         });
-//     }
-//   }, [mentee, mentor]);
-
-    const getMatch = () => {
-        if (mentee && mentor) {
-                  const db = firebase.firestore();
-                  const match = {
-                    menteeId: mentee.id,
-                    mentorId: mentor.id,
-                    menteeName: mentee.name,
-                    mentorName: mentor.name,
-                    createdAt: firebase.firestore.Timestamp.now(),
-                  };
-                  db.collection("matches")
-                    .add(match)
-                    .then((docRef) => {
-                      console.log("Match added with ID: ", docRef.id);
-                      setMatched(true);
-                    })
-                    .catch((error) => {
-                      console.error("Error adding match: ", error);
-                    });
-                }
-            }
-
+      } else {
+        console.log("User data not found");
+      }
+    }).catch((error) => {
+      console.error("Error getting user data: ", error);
+    });
+  };
 
   return (
     <View style={styles.container}>
-      {matched ? (
-        <>
-          <Text style={styles.title}>Matched!</Text>
-          <Text style={styles.text}>Mentee: {mentee.name}</Text>
-          <Text style={styles.text}>Mentor: {mentor.name}</Text>
-          <Text style={styles.text}>Mentee: {mentee.email}</Text>
-          <Button
-            mode="elevated"
-            onPress={() =>
-              navigation.navigate("View Profile", { id: mentee.id })
-            }
-          >
-            View Mentor Info{" "}
-          </Button>
-        </>
+      {match ? (
+        <View>
+          <Text style={styles.title}>Here is your mentor Information</Text>
+          <Text style={styles.text}>Mentee: {match.menteeName}</Text>
+          <Text style={styles.text}>Mentor: {match.mentorName}</Text>
+          <Text style={styles.text}>Mentor Email: {match.mentorEmail}</Text>
+        </View>
       ) : (
-        <Text style={styles.text}>Matching...</Text>
-      )}
-
-      <Button mode="elevated" onPress={() => getMatch}>
-        Get another match
-      </Button>
+        <View>
+          <Text style={styles.title}>No match found</Text>
+            <Text style={styles.text}>Finding a mentor...</Text>
+        </View>
+        )}
+        <Button mode="elevated" style={{marginBottom:15}} onPress={handleMatchPress}>
+            Get another match
+        </Button>
+        <Button mode="elevated" onPress={() => navigation.navigate("View Profile", {user:mentor})}>
+            View Profile
+        </Button>
     </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
@@ -161,3 +147,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+

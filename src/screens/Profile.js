@@ -9,15 +9,28 @@ import firebase from "firebase/compat/app";
 import { Button } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import 'firebase/compat/storage';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 export default function Profile({ route, navigation }) {
   const { user } = route.params;
+  console.log(user);
   const [image, setImage] = useState(null);
   const Tab = createBottomTabNavigator();
+  const [user1, setUser] = useState(null);
+
   const fields = Object.entries(user).filter(
-    ([key, value]) => key !== "id" && value !== null && key!="value" && key!="name"
+    ([key, value]) =>
+      key !== "id" && value !== null && key != "value" && key != "name" && key != "photoURL"
   );
+
   //   const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    AsyncStorage.getItem("user").then((user) => {
+      setUser(JSON.parse(user));
+    });
+  }, []);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -26,21 +39,22 @@ export default function Profile({ route, navigation }) {
       aspect: [4, 3],
       quality: 1,
     });
+    console.log(result)
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       // Convert the image to a blob
-      const response = await fetch(result.uri);
+      const response = await fetch(result.assets[0].uri);
       const blob = await response.blob();
 
       // Upload the image to Firebase Storage
-      const imageName = result.uri.substring(result.uri.lastIndexOf("/") + 1);
+      const imageName = result.assets[0].uri.substring(result.assets[0].uri.lastIndexOf("/") + 1);
       const uploadTask = firebase
         .storage()
         .ref()
         .child(`images/${imageName}`)
         .put(blob);
-
       // Listen for state changes, errors, and completion of the upload.
+
       uploadTask.on(
         "state_changed",
         null,
@@ -50,21 +64,23 @@ export default function Profile({ route, navigation }) {
         async () => {
           // Get the download URL for the image and set it in the state
           const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+
           setImage(downloadURL);
 
           // Update the user's document with the download URL of the image
           const currentUser = firebase.auth().currentUser;
-          firestoreRef = firebase.firestore();
+          const firestoreRef = firebase.firestore();
           if (currentUser) {
             const userRef = firestoreRef
               .collection("users")
-              .doc(currentUser.id);
+              .doc(currentUser.uid);
+              
             await userRef.update({ photoURL: downloadURL });
           }
         }
       );
     }
-  };
+  }
 
   // get all the info of the logged in user
 
@@ -90,6 +106,7 @@ export default function Profile({ route, navigation }) {
   // }, []);
 
   const handleLogout = () => {
+    AsyncStorage.removeItem("user");
     firebase
       .auth()
       .signOut()
@@ -107,12 +124,14 @@ export default function Profile({ route, navigation }) {
           justifyContent: "space-between",
         }}
       >
-        <Image
-          //   source={{ uri: "https://via.placeholder.com/150" }}
-          source={require("../../assets/woman.png")}
-          style={{ width: 150, height: 150, borderRadius: 75 }}
-        />
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 20 }}>{user.name}</Text>
+
+         {user.photoURL && (
+          <Image source={{ uri: user.photoURL }} style={{ width: 200, height: 200, borderRadius:100, alignSelf: "center" }} />
+        )}
+
+        <Text style={{ fontSize: 24, fontWeight: "bold", marginTop: 20 }}>
+          {user.name}
+        </Text>
         <Text style={{ fontSize: 24, marginTop: 10 }}>Role: {user.value}</Text>
         {fields.map(([key, value]) => (
           <View key={key}>
@@ -122,9 +141,8 @@ export default function Profile({ route, navigation }) {
           </View>
         ))}
 
-        {image && (
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-        )}
+       
+        
         {/* <Button title="Pick an image from camera roll" onPress={pickImage} /> */}
 
         <Button
@@ -137,21 +155,13 @@ export default function Profile({ route, navigation }) {
 
         {user.value === "mentee" ? (
           <>
-          <Button
+            <Button
               mode="elevated"
               style={{ marginVertical: 10 }}
-              onPress={() => navigation.navigate("View Match")}
+              onPress={() => navigation.navigate("My Mentor")}
             >
-              View Mentor/ Match
+              My Mentor 
             </Button>
-
-            {/* <Button
-              mode="elevated"
-              style={{ marginVertical: 10 }}
-              onPress={() => navigation.navigate("View Match")}
-            >
-              View Mentor/ Match
-            </Button> */}
 
             <Button
               mode="elevated"
@@ -173,28 +183,43 @@ export default function Profile({ route, navigation }) {
               style={{ marginVertical: 10 }}
               onPress={() => navigation.navigate("Add Mentors", { user: user })}
             >
-              Add To Dos
+              Add Notes
             </Button>
           </>
         ) : (
-            <>
+          <>
             <Button
-            mode="elevated"
-            style={{ marginVertical: 10 }}
-            onPress={() => navigation.navigate("Add More Information", {user})}
-          >
-            Add More Information
-          </Button>
-          <Button
-            mode="elevated"
-            style={{ marginVertical: 10 }}
-            onPress={() => navigation.navigate("View Mentees")}
-          >
-            View Mentees
-          </Button>
+              mode="elevated"
+              style={{ marginVertical: 10 }}
+              onPress={() =>
+                navigation.navigate("Add More Information", { user })
+              }
+            >
+              Add More Information
+            </Button>
+            <Button
+              mode="elevated"
+              style={{ marginVertical: 10 }}
+              onPress={() => navigation.navigate("My Mentee")}
+            >
+              My Mentee
+            </Button>
+            <Button
+              mode="elevated"
+              style={{ marginVertical: 10 }}
+              onPress={() => navigation.navigate("View Mentees")}
+            >
+              View Mentees
+            </Button>
           </>
         )}
-
+        <Button
+          mode="elevated"
+          style={{ marginVertical: 10 }}
+          onPress={() => navigation.navigate("Resources")}
+        >
+          Resources{" "}
+        </Button>
         <Button
           mode="elevated"
           style={{ marginVertical: 10 }}

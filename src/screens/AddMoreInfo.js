@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Checkbox } from "react-native-paper";
 import firebase from "firebase/compat/app";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -11,11 +11,21 @@ const AddMoreInfo = ({ route, navigation }) => {
   const [major, setMajor] = useState(null);
   const [year, setYear] = useState(null);
   const [interests, setInterests] = useState(null);
-  const [classes, setClasses] = useState([]);
+  const [selectedClasses, setSelectedClasses] = useState([]);
   const [clubs, setClubs] = useState(null);
   const [linkedIn, setLinkedIn] = useState(null);
   const [instagram, setInstagram] = useState(null);
+  const classes = [
+    { id: "111 Intro to CS", name: "Intro to CS" },
+    { id: "112 Data Structures", name: "Data Structures" },
+    { id: "211 Comp Arch", name: "Comp Arch" },
+    { id: "205 Discrete 1", name: "Discrete 1" },
+    { id: "206 Discrete 2", name: "Discrete 2" },
+    { id: "213 Software Meth", name: "Software Meth" },
+    { id: "214 Systems Programming", name: "Systems Programming" },
+    { id: "336 Databases", name: "Databases" },
 
+  ];
   useEffect(() => {
     const usersRef = firebase.firestore().collection("users");
     usersRef
@@ -27,7 +37,7 @@ const AddMoreInfo = ({ route, navigation }) => {
           setCampus(user.campus);
           setMajor(user.major);
           setYear(user.year);
-          setClasses(user.classes);
+          setSelectedClasses(user.classes);
           setClubs(user.clubs);
           setInterests(user.interests);
           setInstagram(user.instagram);
@@ -52,12 +62,23 @@ const AddMoreInfo = ({ route, navigation }) => {
       major: major,
       year: year,
       interests: interests,
-      classes: classes,
+      classes: selectedClasses,
       clubs: clubs,
       linkedIn: linkedIn,
       instagram: instagram,
     });
     navigation.goBack();
+  };
+  const handleClassToggle = (id) => {
+    const index = selectedClasses.indexOf(id);
+    if (index === -1) {
+      setSelectedClasses([...selectedClasses, id]);
+    } else {
+      setSelectedClasses([
+        ...selectedClasses.slice(0, index),
+        ...selectedClasses.slice(index + 1),
+      ]);
+    }
   };
 
   return (
@@ -88,12 +109,23 @@ const AddMoreInfo = ({ route, navigation }) => {
         onChangeText={(text) => setYear(text)}
       />
       <Text style={{ fontSize: 16 }}> Select Classes you've taken</Text>
-      <TextInput
+
+        {classes.map((c) => (
+          <View key={c.id} style={styles.checkboxContainer}>
+            <Checkbox.Android
+              status={selectedClasses.includes(c.id) ? "checked" : "unchecked"}
+              onPress={() => handleClassToggle(c.id)}
+              color="#6200EE"
+            />
+            <Text>{c.name}</Text>
+          </View>
+        ))}
+      {/* <TextInput
         style={styles.input}
         placeholder="Classes"
         value={classes}
         onChangeText={(text) => setClasses([text])}
-      />
+      /> */}
       <Text style={{ fontSize: 16 }}> Select Clubs you are a part of</Text>
       <TextInput
         style={styles.input}

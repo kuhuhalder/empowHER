@@ -15,17 +15,19 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [bio, setBio] = useState("");
-  const [role, setValue] = useState("mentee");
+  const [value, setValue] = useState("mentee");
   const { colors } = useTheme();
   const [campus, setCampus] = useState(null);
   const [major, setMajor] = useState(null);
   const [year, setYear] = useState(null);
   const [interests, setInterests] = useState(null);
   const [skills, setSkills] = useState(null);
-  const [classes, setClasses] = useState(null);
+  const [classes, setClasses] = useState([]);
   const [clubs, setClubs] = useState(null);
   const [photoURL, setPhotoURL] = useState(null);
   const [checked, setChecked] = useState(false);
+  const [linkedIn, setLinkedIn] = useState(null);
+  const [instagram, setInstagram] = useState(null);
 
   const onFooterLinkPress = () => {
     navigation.navigate("Login");
@@ -66,7 +68,7 @@ export default function RegistrationScreen({ navigation }) {
           id: uid,
           email,
           name,
-          role,
+          role:value,
           bio,
           campus,
           major,
@@ -76,17 +78,21 @@ export default function RegistrationScreen({ navigation }) {
           classes,
           clubs,
           photoURL,
+          linkedIn,
+          instagram,
         };
         const usersRef = firebase.firestore().collection("users");
         usersRef
           .doc(uid)
           .set(data)
           .then(() => {
+            console.log("registration", data)
             navigation.navigate("Profile", { user: data });
           })
           .catch((error) => {
             alert(error);
           });
+          console.log("User account created & signed in!", );
       })
       .catch((error) => {
         alert(error);
@@ -154,7 +160,7 @@ export default function RegistrationScreen({ navigation }) {
         <Text style={{ marginLeft: 8 }}>Select one</Text>
         <RadioButton.Group
           onValueChange={(newValue) => setValue(newValue)}
-          value={role}
+          value={value}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <RadioButton value="mentor" color={colors.primary} />

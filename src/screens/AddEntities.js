@@ -70,7 +70,7 @@ export default function AddEntities({route}) {
             <View style={styles.formContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder='Add new entity'
+                    placeholder='Add new note/ mentor name'
                     placeholderTextColor="#aaaaaa"
                     onChangeText={(text) => setEntityText(text)}
                     value={entityText}

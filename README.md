@@ -24,9 +24,9 @@ empowHER is a mentorship project that matches women and underrepresented groups 
 ## Installation
 
 To install empowHER, you can clone the repository and install the dependencies using npm:
-- `git clone https://github.com/username/empowher.git`
-- `cd empowher`
-- `npm install`
+- `git clone https://github.com/kuhuhalder/empowHER`
+- `cd empowHER`
+- `npm install .`
 
 
 ## Usage
